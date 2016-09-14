@@ -23,22 +23,13 @@ describe MindBody::Services::Client do
   subject { @client }
 
   describe '#call' do
-    before :each do
-      @locals = { :message => { 'Request' => {
-                                  'SourceCredentials' => {
-                                     'SourceName' => 'test',
-                                     'Password' => 'test_key',
-                                     'SiteIDs' => {'int' => [-99]}
-                                   }
-                                }}}
-    end
     it 'should inject the auth params' do
-      Savon::Operation.any_instance.should_receive(:call).once.with(@locals)
+      Savon::Operation.any_instance.should_receive(:call).once.with(expected_auth_params)
       subject.call(:hello)
     end
 
     it 'should correctly map Arrays to be int lists' do
-      locals = @locals.dup
+      locals = expected_auth_params.dup
       locals[:message]['Request'].merge!({:site_ids => {'int' => [1,2,3,4]}})
       Savon::Operation.any_instance.should_receive(:call).once.with(locals)
       subject.call(:hello, :site_ids => [1,2,3,4])
@@ -47,5 +38,24 @@ describe MindBody::Services::Client do
     it 'should return a MindBody::Services::Response object' do
       expect(subject.call(:hello)).to be_kind_of(MindBody::Services::Response)
     end
+  end
+
+  def expected_auth_params
+      {
+        :message => {
+          'Request' => {
+            'SourceCredentials' => {
+                'SourceName' => 'test',
+                'Password' => 'test_key',
+                'SiteIDs' => {'int' => [-99]}
+              },
+            'UserCredentials' => {
+                'SourceName' => 'test',
+                'Password' => 'test_key',
+                'SiteIDs' => {'int' => [-99]}
+              }
+          }
+        }
+      }
   end
 end

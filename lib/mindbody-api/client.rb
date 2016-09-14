@@ -20,10 +20,24 @@ module MindBody
       end
 
       private
+
       def auth_params
-        {'SourceCredentials'=>{'SourceName'=>MindBody.configuration.source_name,
-                               'Password'=>MindBody.configuration.source_key,
-                               'SiteIDs'=>{'int'=>MindBody.configuration.site_ids}}}
+        {
+          'SourceCredentials'=>{
+            'SourceName'=>MindBody.configuration.source_name,
+            'Password'=>MindBody.configuration.source_key,
+            'SiteIDs'=>{
+              'int'=>MindBody.configuration.site_ids
+            }
+          },
+          'UserCredentials'=>{
+            'SourceName'=>MindBody.configuration.source_name,
+            'Password'=>MindBody.configuration.source_key,
+            'SiteIDs'=>{
+              'int'=>MindBody.configuration.site_ids
+            }
+          }
+        }
       end
 
       def fixup_locals(locals)
