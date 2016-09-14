@@ -42,28 +42,34 @@ describe MindBody::Config do
     end
 
     it 'should load config data from ENV' do
-      ENV['MINDBODY_SOURCE_NAME'] = 'test'
-      ENV['MINDBODY_SOURCE_KEY'] = 'key1234'
-      ENV['MINDBODY_SITE_IDS'] = '1,2,3,-4'
+      stub_env({
+        'MINDBODY_SOURCE_NAME' => 'test',
+        'MINDBODY_SOURCE_KEY' => 'key1234',
+        'MINDBODY_SITE_IDS' => '1,2,3,-4',
+      })
 
-      @config = MindBody::Config.new
-      expect(@config.source_name).to eq('test')
-      expect(@config.source_key).to eq('key1234')
-      expect(@config.site_ids).to eq([1,2,3,-4])
+      config = MindBody::Config.new
+
+      expect(config.source_name).to eq('test')
+      expect(config.source_key).to eq('key1234')
+      expect(config.site_ids).to eq([1,2,3,-4])
     end
 
     it 'should allow arbitrary delimiters for MINDBODY_SITE_IDS' do
-      ENV['MINDBODY_SITE_IDS'] = '1 2 3 -4'
-      @config = MindBody::Config.new
-      expect(@config.site_ids).to eq([1,2,3,-4])
+      with_env('MINDBODY_SITE_IDS', '1 2 3 -4') do
+        config = MindBody::Config.new
+        expect(config.site_ids).to eq([1,2,3,-4])
+      end
 
-      ENV['MINDBODY_SITE_IDS'] = '1;2;3;-4'
-      @config = MindBody::Config.new
-      expect(@config.site_ids).to eq([1,2,3,-4])
+      with_env('MINDBODY_SITE_IDS', '1;2;3;-4') do
+        config = MindBody::Config.new
+        expect(config.site_ids).to eq([1,2,3,-4])
+      end
 
-      ENV['MINDBODY_SITE_IDS'] = '1:2:3:-4'
-      @config = MindBody::Config.new
-      expect(@config.site_ids).to eq([1,2,3,-4])
+      with_env('MINDBODY_SITE_IDS', '1:2:3:-4') do
+        config = MindBody::Config.new
+        expect(config.site_ids).to eq([1,2,3,-4])
+      end
     end
   end
 
